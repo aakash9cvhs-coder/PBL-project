@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UniEvents</title>
+<style>
+/* THEME VARIABLES */
+:root{--bg:#0a0a0a;--card:#141414;--text:#f0f0f0;--sub:#888;--lbl:#aaa;--bdr:#2a2a2a;--inp:#1a1a1a;--feat:#111;--th:#1a1a2e;--td:#1e1e1e;--nav:#000;--side:#0d0d0d;--sideh:#1a1a1a;--sidea:#1a1a2e;--acc:#7c3aed}
+body.light{--bg:#f4f6f9;--card:#fff;--text:#111;--sub:#555;--lbl:#444;--bdr:#ddd;--inp:#fff;--feat:#f4f6f9;--th:#e8eaf6;--td:#f0f0f0;--nav:#0a0a0a;--side:#0a0a0a;--sideh:#1a1a1a;--sidea:#1a1a2e;--acc:#7c3aed}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:var(--bg);color:var(--text);transition:.3s}
+
+/* NAV */
+nav{background:var(--nav);color:#fff;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bdr)}
+nav h1{font-size:.85rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#fff}
+.nav-right{display:flex;gap:8px;align-items:center}
+
+/* THEME TOGGLE */
+#themeBtn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;padding:5px 14px;border-radius:20px;font-size:.78rem;cursor:pointer}
+#themeBtn:hover{background:rgba(255,255,255,.1)}
+
+/* BUTTONS */
+button{padding:10px 22px;border:none;border-radius:7px;cursor:pointer;font-size:.9rem;font-weight:600;transition:.2s}
+.bb{background:var(--acc);color:#fff}.bb:hover{opacity:.88}
+.bw{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35)}.bw:hover{background:rgba(255,255,255,.08)}
+.br{background:#c62828;color:#fff}.br:hover{background:#b71c1c}
+.sm{padding:5px 12px;font-size:.79rem}
+
+/* FORM FIELDS */
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--bdr);border-radius:5px;font-size:.9rem;outline:none;font-family:Arial;background:var(--inp);color:var(--text);transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--acc)}
+select option{background:var(--inp);color:var(--text)}
+label{display:block;font-size:.82rem;color:var(--lbl);font-weight:600;margin-bottom:5px}
+.fg{margin-bottom:13px}
+.err{color:#e05555;font-size:.82rem;margin-top:6px;min-height:14px}
+
+/* PAGES */
+.page{display:none}
+#home.on{display:block}
+#auth.on{display:flex;min-height:calc(100vh - 51px);align-items:center;justify-content:center;background:var(--bg)}
+#dash.on{display:flex;min-height:calc(100vh - 50px)}
+
+/* HOME */
+.hero{text-align:center;padding:80px 20px 60px;background:var(--bg);min-height:calc(100vh - 51px);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.hero .badge{display:inline-block;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.4);color:#a78bfa;font-size:.75rem;padding:4px 14px;border-radius:20px;margin-bottom:28px;letter-spacing:.04em}
+.hero h2{font-size:clamp(3rem,8vw,6rem);font-weight:900;color:#fff;line-height:1;text-transform:uppercase;margin-bottom:20px}
+.hero h2 span{background:linear-gradient(90deg,#7c3aed,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--sub);max-width:480px;margin:0 auto 32px;line-height:1.6;font-size:.95rem}
+.hbtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:60px}
+.hstats{display:flex;gap:48px;justify-content:center;flex-wrap:wrap}
+.hstat b{display:block;font-size:2rem;font-weight:800;background:linear-gradient(90deg,#7c3aed,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hstat span{font-size:.78rem;color:var(--sub)}
+.feats{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;padding:32px 28px;background:var(--card);border-top:1px solid var(--bdr)}
+.feat{background:var(--feat);border-radius:8px;padding:18px;text-align:center;width:170px;border:1px solid var(--bdr)}
+.feat div{font-size:1.8rem;margin-bottom:7px}
+.feat h3{font-size:.9rem;color:var(--acc);margin-bottom:4px}
+.feat p{font-size:.78rem;color:var(--sub)}
+
+/* AUTH */
+.acard{background:var(--card);border-radius:8px;padding:30px;width:100%;max-width:370px;box-shadow:0 2px 12px rgba(0,0,0,.15);border:1px solid var(--bdr)}
+.acard h2{margin-bottom:18px;color:var(--acc);font-size:1.2rem}
+.tabs{display:flex;margin-bottom:18px;border-bottom:2px solid var(--bdr)}
+.tab{flex:1;padding:9px;background:none;border:none;cursor:pointer;color:var(--sub);font-size:.9rem;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tab.on{color:var(--acc);border-bottom-color:var(--acc);font-weight:bold}
+
+/* SIDEBAR */
+.side{width:195px;background:var(--side);flex-shrink:0;display:flex;flex-direction:column;padding:18px 0}
+.side h3{color:#fff;padding:0 16px 14px;font-size:.93rem;border-bottom:1px solid var(--sideh)}
+.side a{display:block;padding:10px 16px;color:#c5cae9;text-decoration:none;font-size:.88rem;cursor:pointer;transition:.15s}
+.side a:hover,.side a.on{background:var(--sidea);color:#fff}
+.side .lo{color:#fca5a5;margin-top:auto}
+.ao{display:none}
+
+/* CONTENT */
+.content{flex:1;padding:26px;overflow-y:auto;background:var(--bg)}
+.sec{display:none}.sec.on{display:block}
+.stitle{font-size:1.25rem;font-weight:bold;color:var(--acc);margin-bottom:4px}
+.ssub{color:var(--sub);font-size:.86rem;margin-bottom:20px}
+
+/* STATS */
+.stats{display:flex;gap:13px;flex-wrap:wrap;margin-bottom:24px}
+.stat{background:var(--card);border-radius:8px;padding:16px 18px;text-align:center;flex:1;min-width:115px;box-shadow:0 1px 4px rgba(0,0,0,.08);border:1px solid var(--bdr)}
+.stat b{display:block;font-size:1.85rem;color:var(--acc)}
+.stat span{font-size:.74rem;color:var(--sub)}
+
+/* EVENT CARDS */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:13px}
+.ecard{background:var(--card);border-radius:8px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08);border:1px solid var(--bdr)}
+.etag{display:inline-block;background:rgba(124,58,237,.15);color:#a78bfa;font-size:.68rem;padding:2px 8px;border-radius:12px;margin-bottom:7px;font-weight:600}
+.ecard h3{font-size:.94rem;margin-bottom:7px}
+.inf{font-size:.78rem;color:var(--sub);line-height:1.9}
+.inf b{color:var(--text)}
+.bar{height:5px;background:var(--td);border-radius:4px;margin:9px 0 11px}
+.bf{height:100%;background:var(--acc);border-radius:4px}
+.bf.lo{background:#c62828}
+.act{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ok{color:#2e7d32;font-size:.78rem;font-weight:600}
+.fu{color:#c62828;font-size:.78rem;font-weight:600}
+
+/* SEARCH */
+.srow{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.srow input{flex:1;min-width:140px}
+.srow select{width:150px;padding:9px 11px}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);border:1px solid var(--bdr)}
+th{background:var(--th);color:var(--acc);padding:10px 13px;text-align:left;font-size:.79rem}
+td{padding:10px 13px;font-size:.82rem;border-bottom:1px solid var(--td);color:var(--text)}
+.bdg{background:#e8f5e9;color:#2e7d32;border-radius:12px;padding:2px 9px;font-size:.72rem;font-weight:600}
+body.dark .bdg{background:#14532d;color:#86efac}
+
+/* FORM BOX */
+.fbox{background:var(--card);border-radius:8px;padding:24px;max-width:540px;box-shadow:0 1px 4px rgba(0,0,0,.08);border:1px solid var(--bdr)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+
+/* MODAL */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;align-items:center;justify-content:center}
+.ov.open{display:flex}
+.modal{background:var(--card);border-radius:10px;padding:26px;width:100%;max-width:410px;max-height:90vh;overflow-y:auto;border:1px solid var(--bdr)}
+.modal h2{margin-bottom:16px;color:var(--acc);font-size:1.1rem}
+.mbtns{display:flex;gap:10px;margin-top:14px}
+.mbtns button{flex:1}
+
+/* TOAST */
+#toast{position:fixed;bottom:22px;right:22px;color:#fff;padding:10px 18px;border-radius:6px;font-size:.86rem;opacity:0;transition:.3s;pointer-events:none;z-index:99}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<nav>
+  <h1>UNIEVENTS</h1>
+  <div class="nav-right">
+    <button id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
+    <div id="nb">
+      <button class="bw" onclick="P('auth')">Login</button>
+      <button class="bb" onclick="P('auth')">Sign Up</button>
+    </div>
+  </div>
+</nav>
+<div id="toast"></div>
+
+<!-- HOME -->
+<div id="home" class="page on">
+  <div class="hero">
+    <div class="badge">v2.0 DSA-Powered Event Platform</div>
+    <h2>Discover<br><span>Campus</span><br>Events</h2>
+    <p>Your university's all-in-one event management hub. Register for workshops, hackathons, cultural fests, and more — powered by real data structures.</p>
+    <div class="hbtns">
+      <button class="bb" onclick="P('auth')">Get Started Free</button>
+      <button class="bw" onclick="P('auth')">View Events &#8594;</button>
+    </div>
+    <div class="hstats">
+      <div class="hstat"><b>48</b><span>Active Events</span></div>
+      <div class="hstat"><b>2.4K</b><span>Students</span></div>
+      <div class="hstat"><b>12</b><span>Departments</span></div>
+      <div class="hstat"><b>99%</b><span>Satisfaction</span></div>
+    </div>
+  </div>
+  <div class="feats">
+    <div class="feat"><div>&#127919;</div><h3>Browse Events</h3><p>Find events by category or keyword.</p></div>
+    <div class="feat"><div>&#129681;</div><h3>Seat Tracking</h3><p>Live seats with progress bar.</p></div>
+    <div class="feat"><div>&#128203;</div><h3>My Registrations</h3><p>Track all your sign-ups.</p></div>
+    <div class="feat"><div>&#9881;&#65039;</div><h3>Organizer Tools</h3><p>Create and manage events.</p></div>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div id="auth" class="page">
+  <div class="acard">
+    <h2>Welcome to UniEvents</h2>
+    <div class="tabs">
+      <button class="tab on" onclick="swT('lf',this)">Login</button>
+      <button class="tab" onclick="swT('sf',this)">Sign Up</button>
+    </div>
+    <div id="lf">
+      <div class="fg"><label>Email</label><input id="le" type="email" placeholder="you@university.edu"></div>
+      <div class="fg"><label>Password</label><input id="lp" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="bb" style="width:100%" onclick="doLogin()">Login</button>
+      <p style="font-size:.75rem;color:var(--sub);margin-top:10px;text-align:center">Demo: admin&#64;uni.edu / admin123</p>
+    </div>
+    <div id="sf" style="display:none">
+      <div class="fg"><label>Full Name</label><input id="sn" placeholder="Jane Doe"></div>
+      <div class="fg"><label>Email</label><input id="se" type="email" placeholder="you@university.edu"></div>
+      <div class="fg"><label>Role</label><select id="sr"><option value="student">Student</option><option value="admin">Event Organizer</option></select></div>
+      <div class="fg"><label>Password</label><input id="sp" type="password" placeholder="Min 6 characters"></div>
+      <button class="bb" style="width:100%" onclick="doSignup()">Create Account</button>
+    </div>
+    <div class="err" id="ae"></div>
+    <div style="text-align:center;margin-top:12px"><button class="bw sm" onclick="P('home')">&#8592; Home</button></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash" class="page">
+  <div class="side">
+    <h3>&#128204; Menu</h3>
+    <a data-s="ov" class="on" onclick="sec('ov',this)">&#128202; Overview</a>
+    <a data-s="br" onclick="sec('br',this)">&#128269; Browse Events</a>
+    <a data-s="re" onclick="sec('re',this)">&#9989; My Registrations</a>
+    <a data-s="mg" class="ao" onclick="sec('mg',this)">&#9881; Manage Events</a>
+    <a data-s="ae" class="ao" onclick="sec('ae',this)">&#10133; Add Event</a>
+    <a class="lo" onclick="doLogout()">&#128682; Logout</a>
+  </div>
+  <div class="content">
+
+    <!-- Overview -->
+    <div id="s-ov" class="sec on">
+      <div class="stitle">Dashboard</div><div class="ssub" id="wm">Welcome!</div>
+      <div class="stats">
+        <div class="stat"><b id="s1">0</b><span>Total Events</span></div>
+        <div class="stat"><b id="s2">0</b><span>Open for Reg.</span></div>
+        <div class="stat"><b id="s3">0</b><span>My Registrations</span></div>
+        <div class="stat"><b id="s4">0</b><span>Upcoming</span></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <b style="color:#1a237e">Recent Events</b>
+        <button id="addBtn" class="bb sm ao" onclick="sec('ae',document.querySelector('[data-s=ae]'))">&#10133; Add Event</button>
+      </div>
+      <div class="grid" id="ovG"></div>
+    </div>
+
+    <!-- Browse -->
+    <div id="s-br" class="sec">
+      <div class="stitle">Browse Events</div><div class="ssub">Find and register for campus events</div>
+      <div class="srow">
+        <input id="sq" placeholder="Search title or venue..." oninput="rBrowse()">
+        <select id="sc" onchange="rBrowse()">
+          <option value="">All Categories</option>
+          <option>Tech</option><option>Cultural</option><option>Sports</option><option>Academic</option><option>Workshop</option>
+        </select>
+      </div>
+      <div class="grid" id="brG"></div>
+    </div>
+
+    <!-- My Registrations -->
+    <div id="s-re" class="sec">
+      <div class="stitle">My Registrations</div><div class="ssub">Events you have signed up for</div>
+      <table><thead><tr><th>Event</th><th>Category</th><th>Date &amp; Time</th><th>Venue</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="reT"></tbody></table>
+    </div>
+
+    <!-- Manage -->
+    <div id="s-mg" class="sec">
+      <div class="stitle">Manage Events</div><div class="ssub">View and delete events</div>
+      <table><thead><tr><th>Event</th><th>Cat.</th><th>Date</th><th>Venue</th><th>Seats</th><th>Registered</th><th>Action</th></tr></thead>
+      <tbody id="mgT"></tbody></table>
+    </div>
+
+    <!-- Add Event -->
+    <div id="s-ae" class="sec">
+      <div class="stitle">Add New Event</div><div class="ssub">Fill details to publish an event</div>
+      <div class="fbox">
+        <div class="fg"><label>Event Title *</label><input id="eti" placeholder="e.g. National Hackathon 2025"></div>
+        <div class="frow">
+          <div class="fg"><label>Category *</label><select id="eca"><option>Tech</option><option>Cultural</option><option>Sports</option><option>Academic</option><option>Workshop</option></select></div>
+          <div class="fg"><label>Venue *</label><input id="eve" placeholder="Main Auditorium"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>Date *</label><input id="eda" type="date"></div>
+          <div class="fg"><label>Time *</label><input id="eti2" type="time"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>Total Seats *</label><input id="ese" type="number" min="1" placeholder="100"></div>
+          <div class="fg"><label>Deadline *</label><input id="edl" type="date"></div>
+        </div>
+        <div class="fg"><label>Description</label><textarea id="ede" rows="2" placeholder="Brief description..."></textarea></div>
+        <button class="bb" onclick="addEvent()">Create Event</button>
+        <div class="err" id="ee"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="ov" id="ov">
+  <div class="modal">
+    <h2 id="mt">Register for Event</h2>
+    <div class="fg"><label>Full Name *</label><input id="rn"></div>
+    <div class="fg"><label>Email *</label><input id="re2i" type="email"></div>
+    <div class="fg"><label>Phone *</label><input id="rp" placeholder="+91 98765 43210"></div>
+    <div class="fg"><label>Dept &amp; Year *</label><input id="rd" placeholder="CSE - 3rd Year"></div>
+    <div class="fg"><label>Why attend?</label><textarea id="rw" rows="2"></textarea></div>
+    <div class="err" id="re2"></div>
+    <div class="mbtns">
+      <button class="bw" onclick="closeM()">Cancel</button>
+      <button class="bb" onclick="confirmReg()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var U=JSON.parse(localStorage.getItem('UE_u')||'[]'),
+    E=JSON.parse(localStorage.getItem('UE_e')||'[]'),
+    R=JSON.parse(localStorage.getItem('UE_r')||'[]'),
+    CU=null,PID=null,navStack=[],regQ=[];
+
+function g(id){return document.getElementById(id)}
+function sv(){localStorage.setItem('UE_u',JSON.stringify(U));localStorage.setItem('UE_e',JSON.stringify(E));localStorage.setItem('UE_r',JSON.stringify(R))}
+
+// Dark/Light theme toggle
+function toggleTheme(){
+  var light=document.body.classList.toggle('light');
+  g('themeBtn').textContent=light?'\u263A Dark':'\u2600\uFE0F Light';
+  localStorage.setItem('UE_theme',light?'light':'dark');
+}
+(function(){
+  if(localStorage.getItem('UE_theme')==='light'){document.body.classList.add('light');g('themeBtn').textContent='\u2600\uFE0F Light';}
+})();
+
+// Seed demo admin
+if(!U.find(function(u){return u.email==='admin@uni.edu'}))
+  U.push({id:0,name:'Admin User',email:'admin@uni.edu',role:'admin',pw:'admin123'});
+if(!E.length){
+  E=[
+    {id:1,title:'Tech Fest 2025',cat:'Tech',venue:'Main Auditorium',date:'2025-08-15',time:'10:00',seats:200,left:45,dl:'2025-08-10'},
+    {id:2,title:'Cultural Night',cat:'Cultural',venue:'Open Air Stage',date:'2025-08-20',time:'18:00',seats:300,left:120,dl:'2025-08-18'},
+    {id:3,title:'Coding Workshop',cat:'Workshop',venue:'Lab 3, Block B',date:'2025-09-01',time:'09:00',seats:60,left:8,dl:'2025-08-28'},
+    {id:4,title:'Sports Meet',cat:'Sports',venue:'Sports Complex',date:'2025-09-10',time:'07:00',seats:500,left:320,dl:'2025-09-05'},
+    {id:5,title:'Research Symposium',cat:'Academic',venue:'Seminar Hall 1',date:'2025-09-20',time:'10:30',seats:150,left:92,dl:'2025-09-15'}
+  ];sv();
+}
+
+function toast(m,ok){var t=g('toast');t.textContent=m;t.style.background=ok===false?'#c62828':'#2e7d32';t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2800)}
+function P(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});g(id).classList.add('on')}
+function swT(id,btn){g('lf').style.display=id==='lf'?'block':'none';g('sf').style.display=id==='sf'?'block':'none';document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');g('ae').textContent=''}
+
+// DSA: Linear Search O(n)
+function findU(em){for(var i=0;i<U.length;i++)if(U[i].email===em)return U[i];return null}
+// DSA: Binary Search O(log n)
+function findE(id){var lo=0,hi=E.length-1;while(lo<=hi){var m=Math.floor((lo+hi)/2);if(E[m].id===id)return E[m];if(E[m].id<id)lo=m+1;else hi=m-1}return null}
+
+function doLogin(){var u=findU(g('le').value.trim()),p=g('lp').value;if(!u||u.pw!==p){g('ae').textContent='Invalid email or password.';return}CU=u;enterDash()}
+function doSignup(){var n=g('sn').value.trim(),e=g('se').value.trim(),p=g('sp').value,r=g('sr').value;if(!n||!e||!p){g('ae').textContent='Fill all fields.';return}if(p.length<6){g('ae').textContent='Password min 6 chars.';return}if(findU(e)){g('ae').textContent='Email already registered.';return}var u={id:Date.now(),name:n,email:e,role:r,pw:p};U.push(u);sv();CU=u;enterDash()}
+function doLogout(){CU=null;navStack=[];g('nb').innerHTML='<button class="bw" onclick="P(\'auth\')">Login</button><button class="bb" onclick="P(\'auth\')">Sign Up</button>';P('home')}
+
+function enterDash(){
+  P('dash');
+  g('wm').textContent='Welcome back, '+CU.name+'!';
+  g('nb').innerHTML='<span style="color:#fff;font-size:.88rem">&#128100; '+CU.name+'</span>';
+  var admin=CU.role==='admin';
+  document.querySelectorAll('.ao').forEach(function(el){el.style.display=admin?'block':'none'});
+  if(admin&&g('addBtn'))g('addBtn').style.display='inline-block';
+  sec('ov',document.querySelector('[data-s="ov"]'));
+}
+
+function sec(id,btn){
+  navStack.push(id);
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on')});
+  g('s-'+id).classList.add('on');
+  document.querySelectorAll('.side a[data-s]').forEach(function(a){a.classList.remove('on')});
+  if(btn)btn.classList.add('on');
+  if(id==='ov')rOv();if(id==='br')rBrowse();if(id==='re')rRegs();if(id==='mg')rManage();
+}
+
+function card(ev){
+  var pct=Math.round((1-ev.left/ev.seats)*100),mine=R.find(function(r){return r.uid===CU.id&&r.eid===ev.id}),lo=ev.left/ev.seats<0.15;
+  var act=mine?'<span class="ok">&#10003; Registered</span>':ev.left?'<button class="bb sm" onclick="openM('+ev.id+')">Register</button>':'<span class="fu">&#9888; Full</span>';
+  return '<div class="ecard"><div class="etag">'+ev.cat+'</div><h3>'+ev.title+'</h3>'
+    +'<div class="inf">&#128205; <b>'+ev.venue+'</b><br>&#128197; <b>'+ev.date+'</b> &#9200; <b>'+ev.time+'</b><br>&#129681; <b>'+ev.left+'</b>/'+ev.seats+' seats</div>'
+    +'<div class="bar"><div class="bf'+(lo?' lo':'')+'" style="width:'+pct+'%"></div></div>'
+    +'<div class="act">'+act+'<small style="color:var(--sub)">Deadline: '+ev.dl+'</small></div></div>';
+}
+
+function rOv(){var m=R.filter(function(r){return r.uid===CU.id});g('s1').textContent=E.length;g('s2').textContent=E.filter(function(e){return e.left>0}).length;g('s3').textContent=m.length;g('s4').textContent=E.filter(function(e){return new Date(e.date)>=new Date()}).length;g('ovG').innerHTML=E.slice(-4).reverse().map(card).join('')}
+function rBrowse(){var q=(g('sq').value||'').toLowerCase(),c=g('sc').value,res=E.filter(function(e){return(!q||e.title.toLowerCase().indexOf(q)!==-1||e.venue.toLowerCase().indexOf(q)!==-1)&&(!c||e.cat===c)});g('brG').innerHTML=res.length?res.map(card).join(''):'<p style="color:var(--sub);padding:18px 0">No events found.</p>'}
+function rRegs(){var m=R.filter(function(r){return r.uid===CU.id});g('reT').innerHTML=m.length?m.map(function(r){var e=findE(r.eid);return e?'<tr><td><b>'+e.title+'</b></td><td>'+e.cat+'</td><td>'+e.date+' '+e.time+'</td><td>'+e.venue+'</td><td><span class="bdg">Confirmed</span></td><td><button class="br sm" onclick="cancelReg('+r.eid+')">Cancel</button></td></tr>':''}).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--sub);padding:22px">No registrations yet.</td></tr>'}
+function rManage(){if(CU.role!=='admin'){g('mgT').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:22px">Organizers only.</td></tr>';return}g('mgT').innerHTML=E.length?E.map(function(e){var cnt=R.filter(function(r){return r.eid===e.id}).length;return'<tr><td><b>'+e.title+'</b></td><td>'+e.cat+'</td><td>'+e.date+'</td><td>'+e.venue+'</td><td>'+e.left+'/'+e.seats+'</td><td>'+cnt+'</td><td><button class="br sm" onclick="delEvent('+e.id+')">Delete</button></td></tr>'}).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:22px">No events yet.</td></tr>'}
+
+function openM(id){PID=id;var e=findE(id);g('mt').textContent='Register: '+e.title;g('rn').value=CU.name;g('re2i').value=CU.email;g('rp').value='';g('rd').value='';g('rw').value='';g('re2').textContent='';g('ov').classList.add('open')}
+function closeM(){g('ov').classList.remove('open');PID=null}
+
+function confirmReg(){
+  if(!g('rp').value.trim()||!g('rd').value.trim()){g('re2').textContent='Phone and department required.';return}
+  regQ.push({uid:CU.id,eid:PID}); // enqueue – Queue DSA
+  var t=regQ.shift();              // dequeue FIFO
+  var e=findE(t.eid);
+  if(!e||e.left<=0){g('re2').textContent='No seats available.';return}
+  if(R.find(function(r){return r.uid===t.uid&&r.eid===t.eid})){g('re2').textContent='Already registered.';return}
+  R.push({uid:t.uid,eid:t.eid,name:g('rn').value,phone:g('rp').value,dept:g('rd').value});
+  e.left--;sv();closeM();rOv();toast('Registered for "'+e.title+'"!');
+}
+
+function cancelReg(eid){if(!confirm('Cancel registration?'))return;var i=R.findIndex(function(r){return r.uid===CU.id&&r.eid===eid});if(i>-1){R.splice(i,1);var e=findE(eid);if(e)e.left++}sv();rRegs();rOv();toast('Cancelled.',false)}
+function delEvent(id){if(!confirm('Delete this event?'))return;E=E.filter(function(e){return e.id!==id});R=R.filter(function(r){return r.eid!==id});sv();rManage();toast('Event deleted.',false)}
+function addEvent(){
+  var ti=g('eti').value.trim(),ve=g('eve').value.trim(),da=g('eda').value,ti2=g('eti2').value,se=parseInt(g('ese').value),dl=g('edl').value;
+  if(!ti||!ve||!da||!ti2||!se||!dl){g('ee').textContent='Fill all required fields.';return}
+  E.push({id:Date.now(),title:ti,cat:g('eca').value,venue:ve,date:da,time:ti2,seats:se,left:se,dl:dl,desc:g('ede').value.trim()});
+  sv();['eti','eve','eda','eti2','ese','edl','ede'].forEach(function(id){g(id).value=''});g('ee').textContent='';
+  toast('Event "'+ti+'" created!');sec('mg',document.querySelector('[data-s="mg"]'));
+}
+</script>
+</body>
+</html>
