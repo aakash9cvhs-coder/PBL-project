@@ -9,7 +9,7 @@ body.light{--bg:#f4f6f9;--card:#fff;--text:#111;--sub:#555;--lbl:#444;--bdr:#ddd
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
 body{background:var(--bg);color:var(--text);transition:.3s}
 nav{background:var(--nav);color:#fff;padding:14px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bdr)}
-nav h1{font-size:.85rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#fff}
+nav h1{font-size:.85rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:#fff;cursor:pointer}
 .nav-right{display:flex;gap:8px;align-items:center}
 #themeBtn{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;padding:5px 14px;border-radius:20px;font-size:.78rem;cursor:pointer}
 #themeBtn:hover{background:rgba(255,255,255,.1)}button{padding:10px 22px;border:none;border-radius:7px;cursor:pointer;font-size:.9rem;font-weight:600;transition:.2s}
@@ -17,7 +17,8 @@ nav h1{font-size:.85rem;font-weight:900;letter-spacing:.18em;text-transform:uppe
 input:focus,select:focus,textarea:focus{border-color:var(--acc)}
 select option{background:var(--inp);color:var(--text)}label{display:block;font-size:.82rem;color:var(--lbl);font-weight:600;margin-bottom:5px}
 .fg{margin-bottom:13px}.err{color:#e05555;font-size:.82rem;margin-top:6px;min-height:14px}.page{display:none}
-#home.on{display:block}#auth.on{display:flex;min-height:calc(100vh - 51px);align-items:center;justify-content:center;background:var(--bg)}
+#home.on{display:block}
+#auth.on{display:flex;min-height:calc(100vh - 51px);align-items:center;justify-content:center;background:var(--bg)}
 #dash.on{display:flex;min-height:calc(100vh - 50px)}
 .hero{text-align:center;padding:80px 20px 60px;background:var(--bg);min-height:calc(100vh - 51px);display:flex;flex-direction:column;align-items:center;justify-content:center}
 .hero .badge{display:inline-block;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.4);color:#a78bfa;font-size:.75rem;padding:4px 14px;border-radius:20px;margin-bottom:28px;letter-spacing:.04em}
@@ -57,29 +58,39 @@ body.dark .bdg{background:#14532d;color:#86efac}.fbox{background:var(--card);bor
 .mbtns{display:flex;gap:10px;margin-top:14px}.mbtns button{flex:1}
 #toast{position:fixed;bottom:22px;right:22px;color:#fff;padding:10px 18px;border-radius:6px;font-size:.86rem;opacity:0;transition:.3s;pointer-events:none;z-index:99}
 #toast.show{opacity:1}
+
+/* Auth required notice on hero */
+.auth-notice{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);
+  color:#a78bfa;font-size:.75rem;padding:5px 14px;border-radius:20px;
+  margin-bottom:16px;
+}
 </style>
 </head>
 <body>
 <nav>
-  <h1>UNIEVENTS</h1>
+  <h1 onclick="goHome()">UNIEVENTS</h1>
   <div class="nav-right">
     <button id="themeBtn" onclick="toggleTheme()">&#9790; Dark</button>
     <div id="nb">
-      <button class="bw" onclick="P('auth')">Login</button>
-      <button class="bb" onclick="P('auth')">Sign Up</button>
+      <button class="bw" onclick="P('auth');swT('lf',document.querySelectorAll('.tab')[0])">Login</button>
+      <button class="bb" onclick="P('auth');swT('sf',document.querySelectorAll('.tab')[1])">Sign Up</button>
     </div>
   </div>
 </nav>
 <div id="toast"></div>
-<!-- HOME -->
+
+<!-- HOME (public landing only) -->
 <div id="home" class="page on">
   <div class="hero">
     <div class="badge">v2.0 DSA-Powered Event Platform</div>
     <h2>Discover<br><span>Campus</span><br>Events</h2>
     <p>Your university's all-in-one event management hub. Register for workshops, hackathons, cultural fests, and more — powered by real data structures.</p>
+    <div class="auth-notice">&#128274; Login required to browse &amp; register for events</div>
     <div class="hbtns">
-      <button class="bb" onclick="P('auth')">Get Started Free</button>
-      <button class="bw" onclick="P('auth')">View Events &#8594;</button>
+      <button class="bb" onclick="P('auth');swT('sf',document.querySelectorAll('.tab')[1])">Get Started Free</button>
+      <button class="bw" onclick="P('auth');swT('lf',document.querySelectorAll('.tab')[0])">Login &#8594;</button>
     </div>
     <div class="hstats">
       <div class="hstat"><b>48</b><span>Active Events</span></div>
@@ -95,6 +106,7 @@ body.dark .bdg{background:#14532d;color:#86efac}.fbox{background:var(--card);bor
     <div class="feat"><div>&#9881;&#65039;</div><h3>Organizer Tools</h3><p>Create and manage events.</p></div>
   </div>
 </div>
+
 <!-- AUTH -->
 <div id="auth" class="page">
   <div class="acard">
@@ -117,10 +129,11 @@ body.dark .bdg{background:#14532d;color:#86efac}.fbox{background:var(--card);bor
       <button class="bb" style="width:100%" onclick="doSignup()">Create Account</button>
     </div>
     <div class="err" id="ae"></div>
-    <div style="text-align:center;margin-top:12px"><button class="bw sm" onclick="P('home')">&#8592; Home</button></div>
+    <div style="text-align:center;margin-top:12px"><button class="bw sm" onclick="P('home')">&#8592; Back to Home</button></div>
   </div>
 </div>
-<!-- DASHBOARD -->
+
+<!-- DASHBOARD (protected) -->
 <div id="dash" class="page">
   <div class="side">
     <h3>&#128204; Menu</h3>
@@ -195,6 +208,7 @@ body.dark .bdg{background:#14532d;color:#86efac}.fbox{background:var(--card);bor
     </div>
   </div>
 </div>
+
 <!-- REGISTER MODAL -->
 <div class="ov" id="ov">
   <div class="modal">
@@ -211,36 +225,195 @@ body.dark .bdg{background:#14532d;color:#86efac}.fbox{background:var(--card);bor
     </div>
   </div>
 </div>
+
 <script>
-var U=JSON.parse(localStorage.getItem('UE_u')||'[]'),E=JSON.parse(localStorage.getItem('UE_e')||'[]'),R=JSON.parse(localStorage.getItem('UE_r')||'[]'),CU=null,PID=null,navStack=[],regQ=[];
+var U=JSON.parse(localStorage.getItem('UE_u')||'[]'),
+    E=JSON.parse(localStorage.getItem('UE_e')||'[]'),
+    R=JSON.parse(localStorage.getItem('UE_r')||'[]'),
+    CU=null, PID=null, regQ=[];
+
 function g(id){return document.getElementById(id)}
 function sv(){localStorage.setItem('UE_u',JSON.stringify(U));localStorage.setItem('UE_e',JSON.stringify(E));localStorage.setItem('UE_r',JSON.stringify(R))}
-function toggleTheme(){var l=document.body.classList.toggle('light');g('themeBtn').textContent=l?'☺ Dark':'☀️ Light';localStorage.setItem('UE_theme',l?'light':'dark');}
-(function(){if(localStorage.getItem('UE_theme')==='light'){document.body.classList.add('light');g('themeBtn').textContent='☀️ Light';}})()
+
+function toggleTheme(){var l=document.body.classList.toggle('light');g('themeBtn').textContent=l?'☀️ Light':'☽ Dark';localStorage.setItem('UE_theme',l?'light':'dark');}
+(function(){if(localStorage.getItem('UE_theme')==='light'){document.body.classList.add('light');g('themeBtn').textContent='☀️ Light';}})();
+
+// Seed admin
 if(!U.find(function(u){return u.email==='admin@uni.edu'}))
   U.push({id:0,name:'Admin User',email:'admin@uni.edu',role:'admin',pw:'admin123'});
-if(!E.length){E=[{id:1,title:'Tech Fest 2025',cat:'Tech',venue:'Main Auditorium',date:'2025-08-15',time:'10:00',seats:200,left:45,dl:'2025-08-10'},{id:2,title:'Cultural Night',cat:'Cultural',venue:'Open Air Stage',date:'2025-08-20',time:'18:00',seats:300,left:120,dl:'2025-08-18'},{id:3,title:'Coding Workshop',cat:'Workshop',venue:'Lab 3, Block B',date:'2025-09-01',time:'09:00',seats:60,left:8,dl:'2025-08-28'},{id:4,title:'Sports Meet',cat:'Sports',venue:'Sports Complex',date:'2025-09-10',time:'07:00',seats:500,left:320,dl:'2025-09-05'},{id:5,title:'Research Symposium',cat:'Academic',venue:'Seminar Hall 1',date:'2025-09-20',time:'10:30',seats:150,left:92,dl:'2025-09-15'}];sv();}
+
+// Seed events
+if(!E.length){
+  E=[
+    {id:1,title:'Tech Fest 2025',cat:'Tech',venue:'Main Auditorium',date:'2025-08-15',time:'10:00',seats:200,left:45,dl:'2025-08-10'},
+    {id:2,title:'Cultural Night',cat:'Cultural',venue:'Open Air Stage',date:'2025-08-20',time:'18:00',seats:300,left:120,dl:'2025-08-18'},
+    {id:3,title:'Coding Workshop',cat:'Workshop',venue:'Lab 3, Block B',date:'2025-09-01',time:'09:00',seats:60,left:8,dl:'2025-08-28'},
+    {id:4,title:'Sports Meet',cat:'Sports',venue:'Sports Complex',date:'2025-09-10',time:'07:00',seats:500,left:320,dl:'2025-09-05'},
+    {id:5,title:'Research Symposium',cat:'Academic',venue:'Seminar Hall 1',date:'2025-09-20',time:'10:30',seats:150,left:92,dl:'2025-09-15'}
+  ];
+  sv();
+}
+
 function toast(m,ok){var t=g('toast');t.textContent=m;t.style.background=ok===false?'#c62828':'#2e7d32';t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2800)}
-function P(id){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});g(id).classList.add('on')}
-function swT(id,btn){g('lf').style.display=id==='lf'?'block':'none';g('sf').style.display=id==='sf'?'block':'none';document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');g('ae').textContent=''}
+
+// ── ROUTING: only 'home' and 'auth' are public ──────────────────────────────
+function P(id){
+  // Guard: 'dash' requires login
+  if(id==='dash' && !CU){P('auth');return;}
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
+  g(id).classList.add('on');
+}
+
+function goHome(){
+  if(CU){P('dash');}else{P('home');}
+}
+
+// ── Session persistence ──────────────────────────────────────────────────────
+(function(){
+  var saved=localStorage.getItem('UE_session');
+  if(saved){
+    var u=JSON.parse(saved);
+    // Re-find from current user store (pw may have changed)
+    var found=U.find(function(x){return x.id===u.id&&x.email===u.email;});
+    if(found){CU=found;enterDash();}
+  }
+})();
+
+function swT(id,btn){
+  g('lf').style.display=id==='lf'?'block':'none';
+  g('sf').style.display=id==='sf'?'block':'none';
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  g('ae').textContent='';
+}
+
 function findU(em){for(var i=0;i<U.length;i++)if(U[i].email===em)return U[i];return null}
 function findE(id){var lo=0,hi=E.length-1;while(lo<=hi){var m=Math.floor((lo+hi)/2);if(E[m].id===id)return E[m];if(E[m].id<id)lo=m+1;else hi=m-1}return null}
-function doLogin(){var u=findU(g('le').value.trim()),p=g('lp').value;if(!u||u.pw!==p){g('ae').textContent='Invalid email or password.';return}CU=u;enterDash()}
-function doSignup(){var n=g('sn').value.trim(),e=g('se').value.trim(),p=g('sp').value,r=g('sr').value;if(!n||!e||!p){g('ae').textContent='Fill all fields.';return}if(p.length<6){g('ae').textContent='Password min 6 chars.';return}if(findU(e)){g('ae').textContent='Email already registered.';return}var u={id:Date.now(),name:n,email:e,role:r,pw:p};U.push(u);sv();CU=u;enterDash()}
-function doLogout(){CU=null;navStack=[];g('nb').innerHTML='<button class="bw" onclick="P(\'auth\')">Login</button><button class="bb" onclick="P(\'auth\')">Sign Up</button>';P('home')}
-function enterDash(){P('dash');g('wm').textContent='Welcome back, '+CU.name+'!';g('nb').innerHTML='<span style="color:#fff;font-size:.88rem">&#128100; '+CU.name+'</span>';var admin=CU.role==='admin';document.querySelectorAll('.ao').forEach(function(el){el.style.display=admin?'block':'none'});if(admin&&g('addBtn'))g('addBtn').style.display='inline-block';sec('ov',document.querySelector('[data-s="ov"]'));}
-function sec(id,btn){navStack.push(id);document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on')});g('s-'+id).classList.add('on');document.querySelectorAll('.side a[data-s]').forEach(function(a){a.classList.remove('on')});if(btn)btn.classList.add('on');if(id==='ov')rOv();if(id==='br')rBrowse();if(id==='re')rRegs();if(id==='mg')rManage();}
-function card(ev){var pct=Math.round((1-ev.left/ev.seats)*100),mine=R.find(function(r){return r.uid===CU.id&&r.eid===ev.id}),lo=ev.left/ev.seats<0.15,act=mine?'<span class="ok">&#10003; Registered</span>':ev.left?'<button class="bb sm" onclick="openM('+ev.id+')">Register</button>':'<span class="fu">&#9888; Full</span>';return'<div class="ecard"><div class="etag">'+ev.cat+'</div><h3>'+ev.title+'</h3><div class="inf">&#128205; <b>'+ev.venue+'</b><br>&#128197; <b>'+ev.date+'</b> &#9200; <b>'+ev.time+'</b><br>&#129681; <b>'+ev.left+'</b>/'+ev.seats+' seats</div><div class="bar"><div class="bf'+(lo?' lo':'')+'" style="width:'+pct+'%"></div></div><div class="act">'+act+'<small style="color:var(--sub)">Deadline: '+ev.dl+'</small></div></div>';}
-function rOv(){var m=R.filter(function(r){return r.uid===CU.id});g('s1').textContent=E.length;g('s2').textContent=E.filter(function(e){return e.left>0}).length;g('s3').textContent=m.length;g('s4').textContent=E.filter(function(e){return new Date(e.date)>=new Date()}).length;g('ovG').innerHTML=E.slice(-4).reverse().map(card).join('')}
-function rBrowse(){var q=(g('sq').value||'').toLowerCase(),c=g('sc').value,res=E.filter(function(e){return(!q||e.title.toLowerCase().indexOf(q)!==-1||e.venue.toLowerCase().indexOf(q)!==-1)&&(!c||e.cat===c)});g('brG').innerHTML=res.length?res.map(card).join(''):'<p style="color:var(--sub);padding:18px 0">No events found.</p>'}
-function rRegs(){var m=R.filter(function(r){return r.uid===CU.id});g('reT').innerHTML=m.length?m.map(function(r){var e=findE(r.eid);return e?'<tr><td><b>'+e.title+'</b></td><td>'+e.cat+'</td><td>'+e.date+' '+e.time+'</td><td>'+e.venue+'</td><td><span class="bdg">Confirmed</span></td><td><button class="br sm" onclick="cancelReg('+r.eid+')">Cancel</button></td></tr>':''}).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--sub);padding:22px">No registrations yet.</td></tr>'}
-function rManage(){if(CU.role!=='admin'){g('mgT').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:22px">Organizers only.</td></tr>';return}g('mgT').innerHTML=E.length?E.map(function(e){var cnt=R.filter(function(r){return r.eid===e.id}).length;return'<tr><td><b>'+e.title+'</b></td><td>'+e.cat+'</td><td>'+e.date+'</td><td>'+e.venue+'</td><td>'+e.left+'/'+e.seats+'</td><td>'+cnt+'</td><td><button class="br sm" onclick="delEvent('+e.id+')">Delete</button></td></tr>'}).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:22px">No events yet.</td></tr>'}
+
+function doLogin(){
+  var u=findU(g('le').value.trim()),p=g('lp').value;
+  if(!u||u.pw!==p){g('ae').textContent='Invalid email or password.';return;}
+  CU=u;
+  localStorage.setItem('UE_session',JSON.stringify({id:u.id,email:u.email}));
+  enterDash();
+}
+
+function doSignup(){
+  var n=g('sn').value.trim(),e=g('se').value.trim(),p=g('sp').value,r=g('sr').value;
+  if(!n||!e||!p){g('ae').textContent='Fill all fields.';return;}
+  if(p.length<6){g('ae').textContent='Password min 6 chars.';return;}
+  if(findU(e)){g('ae').textContent='Email already registered.';return;}
+  var u={id:Date.now(),name:n,email:e,role:r,pw:p};
+  U.push(u);sv();CU=u;
+  localStorage.setItem('UE_session',JSON.stringify({id:u.id,email:u.email}));
+  enterDash();
+}
+
+function doLogout(){
+  CU=null;
+  localStorage.removeItem('UE_session');
+  // Reset nav buttons
+  g('nb').innerHTML='<button class="bw" onclick="P(\'auth\');swT(\'lf\',document.querySelectorAll(\'.tab\')[0])">Login</button><button class="bb" onclick="P(\'auth\');swT(\'sf\',document.querySelectorAll(\'.tab\')[1])">Sign Up</button>';
+  P('home');
+  toast('Logged out successfully.',false);
+}
+
+function enterDash(){
+  // Update nav to show user info
+  g('nb').innerHTML='<span style="color:#fff;font-size:.88rem">&#128100; '+CU.name+'</span><button class="bw sm" onclick="doLogout()">Logout</button>';
+  var admin=CU.role==='admin';
+  document.querySelectorAll('.ao').forEach(function(el){el.style.display=admin?'block':'none'});
+  if(admin&&g('addBtn'))g('addBtn').style.display='inline-block';
+  // Navigate to dash (bypass guard since CU is set)
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
+  g('dash').classList.add('on');
+  sec('ov',document.querySelector('[data-s="ov"]'));
+  g('wm').textContent='Welcome back, '+CU.name+'!';
+}
+
+function sec(id,btn){
+  // Protect all sections
+  if(!CU){P('auth');return;}
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on')});
+  g('s-'+id).classList.add('on');
+  document.querySelectorAll('.side a[data-s]').forEach(function(a){a.classList.remove('on')});
+  if(btn)btn.classList.add('on');
+  if(id==='ov')rOv();
+  if(id==='br')rBrowse();
+  if(id==='re')rRegs();
+  if(id==='mg')rManage();
+}
+
+function card(ev){
+  var pct=Math.round((1-ev.left/ev.seats)*100),
+      mine=R.find(function(r){return r.uid===CU.id&&r.eid===ev.id}),
+      lo=ev.left/ev.seats<0.15,
+      act=mine?'<span class="ok">&#10003; Registered</span>':ev.left?'<button class="bb sm" onclick="openM('+ev.id+')">Register</button>':'<span class="fu">&#9888; Full</span>';
+  return '<div class="ecard"><div class="etag">'+ev.cat+'</div><h3>'+ev.title+'</h3><div class="inf">&#128205; <b>'+ev.venue+'</b><br>&#128197; <b>'+ev.date+'</b> &#9200; <b>'+ev.time+'</b><br>&#129681; <b>'+ev.left+'</b>/'+ev.seats+' seats</div><div class="bar"><div class="bf'+(lo?' lo':'')+'" style="width:'+pct+'%"></div></div><div class="act">'+act+'<small style="color:var(--sub)">Deadline: '+ev.dl+'</small></div></div>';
+}
+
+function rOv(){
+  var m=R.filter(function(r){return r.uid===CU.id});
+  g('s1').textContent=E.length;
+  g('s2').textContent=E.filter(function(e){return e.left>0}).length;
+  g('s3').textContent=m.length;
+  g('s4').textContent=E.filter(function(e){return new Date(e.date)>=new Date()}).length;
+  g('ovG').innerHTML=E.slice(-4).reverse().map(card).join('');
+}
+
+function rBrowse(){
+  var q=(g('sq').value||'').toLowerCase(),c=g('sc').value,
+      res=E.filter(function(e){return(!q||e.title.toLowerCase().indexOf(q)!==-1||e.venue.toLowerCase().indexOf(q)!==-1)&&(!c||e.cat===c)});
+  g('brG').innerHTML=res.length?res.map(card).join(''):'<p style="color:var(--sub);padding:18px 0">No events found.</p>';
+}
+
+function rRegs(){
+  var m=R.filter(function(r){return r.uid===CU.id});
+  g('reT').innerHTML=m.length?m.map(function(r){var e=findE(r.eid);return e?'<tr><td><b>'+e.title+'</b></td><td>'+e.cat+'</td><td>'+e.date+' '+e.time+'</td><td>'+e.venue+'</td><td><span class="bdg">Confirmed</span></td><td><button class="br sm" onclick="cancelReg('+r.eid+')">Cancel</button></td></tr>':''}).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--sub);padding:22px">No registrations yet.</td></tr>';
+}
+
+function rManage(){
+  if(CU.role!=='admin'){g('mgT').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:22px">Organizers only.</td></tr>';return;}
+  g('mgT').innerHTML=E.length?E.map(function(e){var cnt=R.filter(function(r){return r.eid===e.id}).length;return'<tr><td><b>'+e.title+'</b></td><td>'+e.cat+'</td><td>'+e.date+'</td><td>'+e.venue+'</td><td>'+e.left+'/'+e.seats+'</td><td>'+cnt+'</td><td><button class="br sm" onclick="delEvent('+e.id+')">Delete</button></td></tr>'}).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:22px">No events yet.</td></tr>';
+}
+
 function openM(id){PID=id;var e=findE(id);g('mt').textContent='Register: '+e.title;g('rn').value=CU.name;g('re2i').value=CU.email;g('rp').value='';g('rd').value='';g('rw').value='';g('re2').textContent='';g('ov').classList.add('open')}
 function closeM(){g('ov').classList.remove('open');PID=null}
-function confirmReg(){if(!g('rp').value.trim()||!g('rd').value.trim()){g('re2').textContent='Phone and department required.';return}regQ.push({uid:CU.id,eid:PID});var t=regQ.shift(),e=findE(t.eid);if(!e||e.left<=0){g('re2').textContent='No seats available.';return}if(R.find(function(r){return r.uid===t.uid&&r.eid===t.eid})){g('re2').textContent='Already registered.';return}R.push({uid:t.uid,eid:t.eid,name:g('rn').value,phone:g('rp').value,dept:g('rd').value});e.left--;sv();closeM();rOv();toast('Registered for "'+e.title+'"!');}
-function cancelReg(eid){if(!confirm('Cancel registration?'))return;var i=R.findIndex(function(r){return r.uid===CU.id&&r.eid===eid});if(i>-1){R.splice(i,1);var e=findE(eid);if(e)e.left++}sv();rRegs();rOv();toast('Cancelled.',false)}
-function delEvent(id){if(!confirm('Delete this event?'))return;E=E.filter(function(e){return e.id!==id});R=R.filter(function(r){return r.eid!==id});sv();rManage();toast('Event deleted.',false)}
-function addEvent(){var ti=g('eti').value.trim(),ve=g('eve').value.trim(),da=g('eda').value,ti2=g('eti2').value,se=parseInt(g('ese').value),dl=g('edl').value;if(!ti||!ve||!da||!ti2||!se||!dl){g('ee').textContent='Fill all required fields.';return}E.push({id:Date.now(),title:ti,cat:g('eca').value,venue:ve,date:da,time:ti2,seats:se,left:se,dl:dl,desc:g('ede').value.trim()});sv();['eti','eve','eda','eti2','ese','edl','ede'].forEach(function(id){g(id).value=''});g('ee').textContent='';toast('Event "'+ti+'" created!');sec('mg',document.querySelector('[data-s="mg"]'));}
+
+function confirmReg(){
+  if(!g('rp').value.trim()||!g('rd').value.trim()){g('re2').textContent='Phone and department required.';return;}
+  regQ.push({uid:CU.id,eid:PID});
+  var t=regQ.shift(),e=findE(t.eid);
+  if(!e||e.left<=0){g('re2').textContent='No seats available.';return;}
+  if(R.find(function(r){return r.uid===t.uid&&r.eid===t.eid})){g('re2').textContent='Already registered.';return;}
+  R.push({uid:t.uid,eid:t.eid,name:g('rn').value,phone:g('rp').value,dept:g('rd').value});
+  e.left--;sv();closeM();rOv();toast('Registered for "'+e.title+'"!');
+}
+
+function cancelReg(eid){
+  if(!confirm('Cancel registration?'))return;
+  var i=R.findIndex(function(r){return r.uid===CU.id&&r.eid===eid});
+  if(i>-1){R.splice(i,1);var e=findE(eid);if(e)e.left++;}
+  sv();rRegs();rOv();toast('Cancelled.',false);
+}
+
+function delEvent(id){
+  if(!confirm('Delete this event?'))return;
+  E=E.filter(function(e){return e.id!==id});
+  R=R.filter(function(r){return r.eid!==id});
+  sv();rManage();toast('Event deleted.',false);
+}
+
+function addEvent(){
+  var ti=g('eti').value.trim(),ve=g('eve').value.trim(),da=g('eda').value,ti2=g('eti2').value,se=parseInt(g('ese').value),dl=g('edl').value;
+  if(!ti||!ve||!da||!ti2||!se||!dl){g('ee').textContent='Fill all required fields.';return;}
+  E.push({id:Date.now(),title:ti,cat:g('eca').value,venue:ve,date:da,time:ti2,seats:se,left:se,dl:dl,desc:g('ede').value.trim()});
+  sv();
+  ['eti','eve','eda','eti2','ese','edl','ede'].forEach(function(id){g(id).value='';});
+  g('ee').textContent='';
+  toast('Event "'+ti+'" created!');
+  sec('mg',document.querySelector('[data-s="mg"]'));
+}
 </script>
 </body>
 </html>
